@@ -42,9 +42,26 @@ ol, ul {
 
 .game {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 
 .game-info {
-  margin-left: 20px;
+  margin: 20px 0;
+}
+
+.game-moves {
+  display: flex;
+  flex-direction: row;
+}
+
+.move {
+  text-decoration: underline;
+  cursor: pointer;
+  margin-right: 8px;
+  color: #555;
+  font-size: 80%;
+}
+
+.move:nth-child(2n+1) {
+  margin-right: 20px;
 }

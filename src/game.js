@@ -6,10 +6,10 @@ export class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      history: [
-        { squares: Array(9).fill(null) }
-      ],
-      xIsNext: true,
+      history: [{
+        squares: Array(9).fill(null),
+        squarePlayed: -1,
+      }],
       stepNumber: 0,
     };
   }
@@ -19,8 +19,12 @@ export class Game extends React.Component {
     return history[this.state.stepNumber].squares;
   }
 
+  turnOf(i) {
+    return i % 2 === 0 ? 'X' : 'O';
+  }
+
   turn() {
-    return this.state.xIsNext ? 'X' : 'O';
+    return this.turnOf(this.state.stepNumber);
   }
 
   isDrawn() {
@@ -47,7 +51,7 @@ export class Game extends React.Component {
       return 'Game drawn';
     }
 
-    return `Next player: ${this.turn()}`;
+    return `Next to play: ${this.turn()}`;
   }
 
   handleClick(i) {
@@ -65,41 +69,54 @@ export class Game extends React.Component {
     squares[i] = this.turn();
 
     this.setState({
-      history: this.state.history.slice(0, this.state.stepNumber + 1).concat({ squares }),
+      history: this.state.history.slice(0, this.state.stepNumber + 1).concat({
+        squares,
+        squarePlayed: i,
+      }),
       stepNumber: this.state.stepNumber + 1,
-      xIsNext: this.state.stepNumber % 2 === 1,
     });
   }
 
   jumpTo(i) {
     this.setState({
       stepNumber: i,
-      xIsNext: i % 2 === 0
     })
   }
 
+  getCoordinates(i) {
+    const letter = 'abc'[i % 3];
+    const digit = 3 - Math.floor(i / 3);
+    return letter + digit;
+  }
+
+  getMoveDescription(moveNumber, squarePlayed) {
+    const prefix = moveNumber % 2 === 0 ? '' : `${Math.floor((moveNumber + 1) / 2)}. `;
+    const moveDescription = `${this.turnOf(moveNumber-1)}:${this.getCoordinates(squarePlayed)}`;
+    return prefix + moveDescription;
+  }
+
   moves() {
-    return this.state.history.map((_, i) => (
-      <li key={i}>
-          <button onClick={() => this.jumpTo(i)}>
-            {i === 0 ? 'Go to game start' : `Go to move ${i}`}
-          </button>
-      </li>
+    return this.state.history.map((x, i) => (
+      <div key={i} className="move" onClick={() => this.jumpTo(i)}>
+        {i === 0 ? 'Initial position' : this.getMoveDescription(i, x.squarePlayed)}
+      </div>
     ));
   }
 
   render() {
     return (
       <div className="game">
+        <div className="game-moves">
+          {this.moves()}
+        </div>
+        <div className="game-info">
+          {this.status()}
+        </div>
         <div className="game-board">
           <Board
             squares={this.squares()}
             onClick={(i) => this.handleClick(i)}
           />
-        </div>
-        <div className="game-info">
-          <div>{this.status()}</div>
-          <ol>{this.moves()}</ol>
         </div>
       </div>
     );
