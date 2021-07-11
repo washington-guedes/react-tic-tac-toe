@@ -11,6 +11,7 @@ export class Game extends React.Component {
         lastMovePlayed: -1,
       }],
       stepNumber: 0,
+      orderAsc: true,
     };
   }
 
@@ -101,32 +102,48 @@ export class Game extends React.Component {
     return prefix + moveDescription;
   }
 
-  moves() {
-    return this.state.history.map((x, stepNumber) => {
-      const classGroup = ['move'];
+  getMove(stepNumber) {
+    const classGroup = ['move'];
 
-      if (this.state.stepNumber === stepNumber) {
-        classGroup.push('current-shown');
+    if (this.state.stepNumber === stepNumber) {
+      classGroup.push('current-shown');
+    }
+
+    return (
+      <div
+        key={stepNumber}
+        className={classGroup.join(' ')}
+        onClick={() => this.jumpTo(stepNumber)}
+      >
+        {this.getMoveDescription(stepNumber, this.state.history[stepNumber].lastMovePlayed)}
+      </div>
+    );
+  }
+
+  getAllMoves() {
+    const startingPosition = this.getMove(0);
+    const allMoves = [
+      <div className="move-group" key="0">{startingPosition}</div>
+    ];
+
+    for (let i = 1, l = this.state.history.length; i < l; i += 2) {
+      const moveGroup = [this.getMove(i)]
+      if (i + 1 < l) {
+        moveGroup.push(this.getMove(i+1))
       }
+      allMoves.push(<div className="move-group" key={i}>{moveGroup}</div>);
+    }
 
-      return (
-        <div
-          key={stepNumber}
-          className={classGroup.join(' ')}
-          onClick={() => this.jumpTo(stepNumber)}
-        >
-          {this.getMoveDescription(stepNumber, x.lastMovePlayed)}
-        </div>
-      );
-    });
+    return this.state.orderAsc ? allMoves : allMoves.reverse();
+  }
+
+  toggleMovesOrder() {
+    this.setState({ orderAsc: !this.state.orderAsc });
   }
 
   render() {
     return (
       <div className="game">
-        <div className="game-moves">
-          {this.moves()}
-        </div>
         <div className="game-info">
           {this.status()}
         </div>
@@ -136,6 +153,12 @@ export class Game extends React.Component {
             onClick={(i) => this.handleClick(i)}
           />
         </div>
+        <div className="game-moves">
+          {this.getAllMoves()}
+        </div>
+        <button className="toggle-button" onClick={() => this.toggleMovesOrder()}>
+          {this.state.orderAsc ? 'last moves first' : 'initial moves first'}
+        </button>
       </div>
     );
   }

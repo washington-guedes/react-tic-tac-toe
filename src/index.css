@@ -43,15 +43,25 @@ ol, ul {
 .game {
   display: flex;
   flex-direction: column;
+
+  width: 100%;
+  align-items: center;
 }
 
 .game-info {
-  margin: 20px 0;
+  margin-bottom: 20px;
 }
 
 .game-moves {
   display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+}
+
+.move-group {
+  display: flex;
   flex-direction: row;
+  margin-top: 8px;
 }
 
 .move {
@@ -66,6 +76,14 @@ ol, ul {
   margin-right: 20px;
 }
 
-.move.current-shown:not(:first-child) {
+.move.current-shown {
   font-weight: bold;
+}
+
+.move:last-child {
+  margin-right: 0;
+}
+
+.toggle-button {
+  margin-top: 30px;
 }
