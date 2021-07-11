@@ -9,6 +9,7 @@ export class Game extends React.Component {
       history: [{
         squares: Array(9).fill(null),
         lastMovePlayed: -1,
+        winningMoves: [],
       }],
       stepNumber: 0,
       orderAsc: true,
@@ -18,6 +19,11 @@ export class Game extends React.Component {
   squares() {
     const { history } = this.state;
     return history[this.state.stepNumber].squares;
+  }
+
+  winningMoves() {
+    const { history } = this.state;
+    return history[this.state.stepNumber].winningMoves;
   }
 
   turnOf(i) {
@@ -45,7 +51,7 @@ export class Game extends React.Component {
 
     const winner = calculateWinner(squares);
     if (winner) {
-      return `Winner: ${winner}`;
+      return `Winner: ${squares[winner[0]]}`;
     }
 
     if (this.isDrawn()) {
@@ -73,6 +79,7 @@ export class Game extends React.Component {
       history: this.state.history.slice(0, this.state.stepNumber + 1).concat({
         squares,
         lastMovePlayed: i,
+        winningMoves: calculateWinner(squares)
       }),
       stepNumber: this.state.stepNumber + 1,
     });
@@ -150,6 +157,7 @@ export class Game extends React.Component {
         <div className="game-board">
           <Board
             squares={this.squares()}
+            winningMoves={this.winningMoves()}
             onClick={(i) => this.handleClick(i)}
           />
         </div>

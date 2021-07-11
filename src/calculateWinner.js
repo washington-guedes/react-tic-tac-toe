@@ -1,33 +1,26 @@
 /**
- * calculateWinner finds out if the current board has a winner or not
+ * calculateWinner finds out the 3 moves that won the game.
+ * if the game has no winner, null is returned.
  * @param {('X' | 'O' | null)[]} board
- * @returns 'X' | 'O' | null
+ * @returns number[]
  */
 export function calculateWinner(board) {
-  const s = board.map((x, i) => x || i).join('');
+  const winningPossibilities = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
 
-  // https://regex101.com/r/SEC1fz/1
-  const colWinner = s.match(/(.)(?=(?:..\1){2})/);
-  if (colWinner) {
-    return colWinner[1]
-  }
-
-  // https://regex101.com/r/hn2jSj/1
-  const rowWinner = s.match(/(.)\1\1((...)*$)/);
-  if (rowWinner) {
-    return rowWinner[1]
-  }
-
-  // https://regex101.com/r/B86h4s/1
-  const a1DWinner = s.match(/..(.).\1.\1../);
-  if (a1DWinner) {
-    return a1DWinner[1]
-  }
-
-  // https://regex101.com/r/vmqIHC/1
-  const a3DWinner = s.match(/(.)...\1...\1/);
-  if (a3DWinner) {
-    return a3DWinner[1]
+  for (let i = 0; i < winningPossibilities.length; i++) {
+    const [a, b, c] = winningPossibilities[i];
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return winningPossibilities[i];
+    }
   }
 
   return null;

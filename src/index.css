@@ -87,3 +87,7 @@ ol, ul {
 .toggle-button {
   margin-top: 30px;
 }
+
+.winning-move {
+  background-color: lightgreen;
+}

@@ -3,9 +3,12 @@ import { Square } from './square';
 
 export class Board extends React.Component {
   renderSquare(i) {
+    const winningMove = (this.props.winningMoves || []).includes(i);
+
     return (
       <Square
         value={this.props.squares[i]}
+        winningMove={winningMove}
         onClick={() => this.props.onClick(i)}
         key={i}
       />
