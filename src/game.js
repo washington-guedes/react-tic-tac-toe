@@ -8,7 +8,7 @@ export class Game extends React.Component {
     this.state = {
       history: [{
         squares: Array(9).fill(null),
-        squarePlayed: -1,
+        lastMovePlayed: -1,
       }],
       stepNumber: 0,
     };
@@ -71,16 +71,14 @@ export class Game extends React.Component {
     this.setState({
       history: this.state.history.slice(0, this.state.stepNumber + 1).concat({
         squares,
-        squarePlayed: i,
+        lastMovePlayed: i,
       }),
       stepNumber: this.state.stepNumber + 1,
     });
   }
 
-  jumpTo(i) {
-    this.setState({
-      stepNumber: i,
-    })
+  jumpTo(stepNumber) {
+    this.setState({ stepNumber })
   }
 
   getCoordinates(i) {
@@ -89,18 +87,38 @@ export class Game extends React.Component {
     return letter + digit;
   }
 
-  getMoveDescription(moveNumber, squarePlayed) {
-    const prefix = moveNumber % 2 === 0 ? '' : `${Math.floor((moveNumber + 1) / 2)}. `;
-    const moveDescription = `${this.turnOf(moveNumber-1)}:${this.getCoordinates(squarePlayed)}`;
+  getMoveDescription(stepNumber, lastMovePlayed) {
+    if (stepNumber === 0) {
+      return 'Initial position'
+    }
+
+    let prefix = '';
+    if (stepNumber % 2 === 1) {
+      prefix = Math.floor(stepNumber / 2) + 1 + '. ';
+    }
+
+    const moveDescription = `${this.turnOf(stepNumber-1)}:${this.getCoordinates(lastMovePlayed)}`;
     return prefix + moveDescription;
   }
 
   moves() {
-    return this.state.history.map((x, i) => (
-      <div key={i} className="move" onClick={() => this.jumpTo(i)}>
-        {i === 0 ? 'Initial position' : this.getMoveDescription(i, x.squarePlayed)}
-      </div>
-    ));
+    return this.state.history.map((x, stepNumber) => {
+      const classGroup = ['move'];
+
+      if (this.state.stepNumber === stepNumber) {
+        classGroup.push('current-shown');
+      }
+
+      return (
+        <div
+          key={stepNumber}
+          className={classGroup.join(' ')}
+          onClick={() => this.jumpTo(stepNumber)}
+        >
+          {this.getMoveDescription(stepNumber, x.lastMovePlayed)}
+        </div>
+      );
+    });
   }
 
   render() {
